@@ -1,0 +1,35 @@
+@baseUrl = http://localhost:3000
+
+
+# RECEITAS
+###
+GET {{baseUrl}}/receitas
+###
+GET {{baseUrl}}/receitas/1
+###
+POST {{baseUrl}}/receitas/
+Content-Type: application/json
+
+{
+    "receita": "3000.00",
+    "origem": "dividendos"
+}
+
+
+
+
+###AppControllerGetHello
+# @name AppControllerGetHello
+GET {{baseUrl}}/home/hello
+
+###ExemplodeRota
+# @name ExemploDeRota
+GET {{baseUrl}}/home/exemplo
+
+###ConceitosManualController
+# @name ConceitosManualControllerHome
+GET {{baseUrl}}/conceitos-manual
+
+###ConceitosAutomaticoController
+# @name ConceitosAutomaticoControllerHome
+GET {{baseUrl}}/conceitos-automatico
