@@ -7,6 +7,6 @@ export class AppService {
   }
 
   solucionaExemplo(): string {
-    return 'Exemplo de service'
+    return 'Exemplo de service';
   }
 }

@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class ConceitosManualService {
-    solucionaHome(): string {
-        return 'home do conceitos manual service'
-    }
+  solucionaHome(): string {
+    return 'home do conceitos manual service';
+  }
 }

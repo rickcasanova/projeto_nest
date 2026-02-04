@@ -1,22 +1,52 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { ReceitasService } from './receitas.service';
+import { CreateReceitaDto } from './dto/create-receita.dto';
+import { UpdateReceitaDto } from './dto/update-receita.dto';
 
 @Controller('receitas')
 export class ReceitasController {
-    //Encontra todos os registros
-    @HttpCode(HttpStatus.OK)
-    @Get()
-    findAll() {
-        return 'Essa rota retorna todas as receitas';
-    }
-    
-    //Encontra um registro
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return `Essa rota retorna ID ${id}`;
-    }
+  constructor(private readonly receitasService: ReceitasService) {}
 
-    @Post()
-    create(@Body() body: any) {
-        return `O valor de receita é ${body.receita} proveniente de ${body.origem}` ;
-    }
+  //Encontra todos os registros
+  @HttpCode(HttpStatus.OK)
+  @Get()
+  findAll(@Query() pagination: any) {
+    return this.receitasService.findAll();
+  }
+
+  //Encontra um registro
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.receitasService.findOne(id);
+  }
+
+  @Post()
+  create(@Body() createReceitaDto: CreateReceitaDto) {
+    return this.receitasService.create(createReceitaDto);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateReceitaDto: UpdateReceitaDto,
+  ) {
+    return this.receitasService.update(id, updateReceitaDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.receitasService.remove(id);
+  }
 }

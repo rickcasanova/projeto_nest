@@ -3,17 +3,29 @@
 
 # RECEITAS
 ###
-GET {{baseUrl}}/receitas
+GET {{baseUrl}}/receitas/
+?limit=10
+&offset=15
 ###
-GET {{baseUrl}}/receitas/1
+GET {{baseUrl}}/receitas/2
 ###
 POST {{baseUrl}}/receitas/
 Content-Type: application/json
 
 {
-    "receita": "3000.00",
-    "origem": "dividendos"
+    "receita": 5000,
+    "origem": "Dividendos",
+    "responsavel": "Ricardo"
 }
+###Atualiza
+PATCH {{baseUrl}}/receitas/2
+Content-Type: application/json
+
+{
+    "origem": "Pix"
+}
+###Apaga
+DELETE  {{baseUrl}}/receitas/2
 
 
 
