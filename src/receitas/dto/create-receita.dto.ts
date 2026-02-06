@@ -1,6 +1,7 @@
 import {
   IsNotEmpty,
   IsNumber,
+  IsPositive,
   IsString,
   MaxLength,
   MinLength,
@@ -17,9 +18,6 @@ export class CreateReceitaDto {
   @MaxLength(255)
   readonly origem: string;
 
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(3)
-  @MaxLength(255)
-  readonly responsavel: string;
+  @IsPositive()
+  readonly responsavelId: number;
 }

@@ -14,6 +14,7 @@ import {
 import { ReceitasService } from './receitas.service';
 import { CreateReceitaDto } from './dto/create-receita.dto';
 import { UpdateReceitaDto } from './dto/update-receita.dto';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Controller('receitas')
 export class ReceitasController {
@@ -22,14 +23,17 @@ export class ReceitasController {
   //Encontra todos os registros
   @HttpCode(HttpStatus.OK)
   @Get()
-  findAll(@Query() pagination: any) {
-    return this.receitasService.findAll();
+  async findAll(@Query() paginationDto: PaginationDto) {
+    const receitas = await this.receitasService.findAll(paginationDto);
+    return receitas;
   }
 
   //Encontra um registro
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.receitasService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    const receita = await this.receitasService.findOne(id);
+
+    return receita;
   }
 
   @Post()

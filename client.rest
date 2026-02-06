@@ -1,13 +1,42 @@
 @baseUrl = http://localhost:3000
 
 
+# PESSOAS
+###LISTAR TODAS
+GET {{baseUrl}}/pessoas/
+?limit=10
+&offset=15
+###LISTAR UMA
+GET {{baseUrl}}/pessoas/9
+###CRIAR
+POST {{baseUrl}}/pessoas/
+Content-Type: application/json
+
+{
+    "nome": "Ricardo",
+    "email": "email@email.com",
+    "password": "Ricardo"
+}
+###Atualiza
+PATCH {{baseUrl}}/pessoas/9
+Content-Type: application/json
+
+{
+    "email": "123455@email.com"
+}
+###Apaga
+DELETE  {{baseUrl}}/pessoas/9
+
+
+
+
 # RECEITAS
 ###
 GET {{baseUrl}}/receitas/
 ?limit=10
 &offset=15
 ###
-GET {{baseUrl}}/receitas/2
+GET {{baseUrl}}/receitas/6
 ###
 POST {{baseUrl}}/receitas/
 Content-Type: application/json
@@ -15,17 +44,18 @@ Content-Type: application/json
 {
     "receita": 5000,
     "origem": "Dividendos",
-    "responsavel": "Ricardo"
+    "responsavelId": 11
 }
 ###Atualiza
-PATCH {{baseUrl}}/receitas/2
+PATCH {{baseUrl}}/receitas/8
 Content-Type: application/json
 
 {
-    "origem": "Pix"
+    "receita": 5500,
+    "origem": "Dinheiro"
 }
 ###Apaga
-DELETE  {{baseUrl}}/receitas/2
+DELETE  {{baseUrl}}/receitas/4
 
 
 

@@ -2,79 +2,98 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Receita } from './entities/receita.entity';
 import { CreateReceitaDto } from './dto/create-receita.dto';
 import { UpdateReceitaDto } from './dto/update-receita.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { PessoasService } from 'src/pessoas/pessoas.service';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class ReceitasService {
-  private lastId = 1;
-  private receitas: Receita[] = [
-    {
-      id: 1,
-      receita: 3500.0,
-      origem: 'Dividendos',
-      responsavel: 'Ricardo',
-      data: new Date(),
-    },
-  ];
+  constructor(
+    @InjectRepository(Receita)
+    private readonly receitaRepository: Repository<Receita>,
+    private readonly pessoasService: PessoasService,
+  ) {}
 
-  throwNotFoundError() {
+  throwNotFoundError(): never {
     throw new NotFoundException('Receita não encontrada');
   }
 
-  findAll() {
-    return this.receitas;
+  async findAll(paginationDto?: PaginationDto) {
+    const { limit = 10, offset = 0 } = paginationDto || {};
+
+    const receitas = await this.receitaRepository.find({
+      take: limit,
+      skip: offset,
+      relations: ['responsavel'],
+      order: {
+        id: 'desc',
+      },
+      select: {
+        id: true,
+        responsavel: true,
+      },
+    });
+
+    return receitas;
   }
 
-  findOne(id: number) {
-    const receita = this.receitas.find((item) => item.id === id);
+  async findOne(id: number) {
+    const receita = await this.receitaRepository.findOne({
+      where: {
+        id,
+      },
+      relations: ['responsavel'],
+      order: {
+        id: 'desc',
+      },
+      select: {
+        id: true,
+        responsavel: true,
+      },
+    });
 
     if (receita) return receita;
     this.throwNotFoundError();
   }
 
-  create(createReceitaDto: CreateReceitaDto) {
-    this.lastId++;
+  async create(createReceitaDto: CreateReceitaDto) {
+    const { responsavelId } = createReceitaDto;
+    const responsavel = await this.pessoasService.findOne(responsavelId);
 
-    const id = this.lastId;
     const newReceita = {
-      id,
-      ...createReceitaDto,
+      receita: createReceitaDto.receita,
+      origem: createReceitaDto.origem,
+      responsavel,
       data: new Date(),
     };
-    this.receitas.push(newReceita);
 
-    return newReceita;
-  }
-
-  update(id: number, updateReceitaDto: UpdateReceitaDto) {
-    const receitaExistenteIndex = this.receitas.findIndex(
-      (item) => item.id === id,
-    );
-
-    if (receitaExistenteIndex < 0) {
-      this.throwNotFoundError();
-    }
-
-    const receitaExistente = this.receitas[receitaExistenteIndex];
-
-    this.receitas[receitaExistenteIndex] = {
-      ...receitaExistente,
-      ...updateReceitaDto,
+    const receita = this.receitaRepository.create(newReceita);
+    await this.receitaRepository.save(receita);
+    return {
+      ...receita,
+      responsavel: {
+        id: receita.responsavel.id,
+      },
     };
-
-    return this.receitas[receitaExistenteIndex];
   }
 
-  remove(id: number) {
-    const receitaExistenteIndex = this.receitas.findIndex(
-      (item) => item.id === id,
-    );
+  async update(id: number, updateReceitaDto: UpdateReceitaDto) {
+    const receita = await this.findOne(id);
 
-    if (receitaExistenteIndex < 0) {
-      this.throwNotFoundError();
-    }
+    receita.receita = updateReceitaDto?.receita ?? receita.receita;
+    receita.origem = updateReceitaDto?.origem ?? receita.origem;
+    await this.receitaRepository.save(receita);
 
-    this.receitas.splice(receitaExistenteIndex, 1);
+    return receita;
+  }
 
-    return 'Excluído com sucesso.';
+  async remove(id: number) {
+    const receita = await this.receitaRepository.findOneBy({
+      id,
+    });
+
+    if (receita) return this.receitaRepository.remove(receita);
+    this.throwNotFoundError();
   }
 }
